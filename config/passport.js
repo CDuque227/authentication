@@ -1,4 +1,4 @@
-var LocalStrategy    = require('passport-local').Strategy;
+var LocalStrategy    = require('passport-local-roles').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var User = require('../app/models/user');
 var configAuth = require('./auth');
@@ -18,9 +18,10 @@ module.exports = function(passport) {
     passport.use('local-login', new LocalStrategy({
         usernameField : 'email',
         passwordField : 'password',
+        roleField: 'role',
         passReqToCallback : true
     },
-    function(req, email, password, done) {
+    function(req, email, password,role, done) {
 
         if (email)
             email = email.toLowerCase();
@@ -47,9 +48,10 @@ module.exports = function(passport) {
     passport.use('local-signup', new LocalStrategy({
         usernameField : 'email',
         passwordField : 'password',
+        roleField: 'role',
         passReqToCallback : true
     },
-    function(req, email, password, done) {
+    function(req, email, password, role, done) {
         if (email)
             email = email.toLowerCase();
 
@@ -68,6 +70,7 @@ module.exports = function(passport) {
 
                         newUser.local.email = email;
                         newUser.local.password = newUser.generateHash(password);
+                        newUser.local.role = role;
 
                         newUser.save(function(err) {
                             if (err)
@@ -89,6 +92,7 @@ module.exports = function(passport) {
                         var user = req.user;
                         user.local.email = email;
                         user.local.password = user.generateHash(password);
+                        newUser.local.role = role;
                         user.save(function (err) {
                             if (err)
                                 return done(err);

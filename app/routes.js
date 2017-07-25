@@ -9,9 +9,20 @@ module.exports = function(app, passport) {
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function(req, res) {
+      console.log("logueado", req)
+      if(req.user.local.role=="admin"){
         res.render('profile.ejs', {
             user : req.user
         });
+      }else{
+        req.user.local.password =null
+        req.user.local.role=null
+        res.render('profile.ejs', {
+          user : req.user
+        });
+      }
+
+
     });
 
     // LOGOUT ==============================
@@ -37,6 +48,8 @@ module.exports = function(app, passport) {
             failureRedirect : '/login', // redirect back to the signup page if there is an error
             failureFlash : true // allow flash messages
         }));
+
+
 
         // SIGNUP =================================
         // show the signup form
